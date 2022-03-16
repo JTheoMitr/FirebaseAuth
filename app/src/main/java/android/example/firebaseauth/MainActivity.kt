@@ -11,6 +11,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
     private lateinit var auth : FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
+        auth = FirebaseAuth.getInstance()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val current_user = auth.currentUser
@@ -29,8 +30,26 @@ class MainActivity : AppCompatActivity() {
                 val currentUser = auth.currentUser!!.email.toString()
                 Toast.makeText(this, "Welcome, ${currentUser}", Toast.LENGTH_LONG).show()
                 val intent = Intent(this, PhotoSharing::class.java)
+                startActivity(intent)
+                finish()
 
             }
+        }.addOnFailureListener { exception ->
+            Toast.makeText(this, exception.localizedMessage, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    fun Register(view : View) {
+        val email = emailText.text.toString()
+        val password = passwordText.text.toString()
+        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val intent = Intent(this, PhotoSharing::class.java)
+                startActivity(intent)
+                finish()
+            }
+        }.addOnFailureListener { exception ->
+            Toast.makeText(this, exception.localizedMessage, Toast.LENGTH_LONG).show()
         }
     }
 }
